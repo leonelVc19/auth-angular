@@ -3,6 +3,7 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { catchError, map, Observable, of, tap, throwError } from 'rxjs';
 import { environments } from 'src/environments/environments';
 import { AuthStatus, CheckTokenResponse, LoginResponse, User } from '../interfaces';
+import { UserRegister } from '../interfaces/user-register.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -37,26 +38,32 @@ export class AuthService {
   login( email: string, password: string ): Observable<boolean> {
     const url = `${this.baseUrl}/auth/login`;
     const body = { email, password };
-    const data =  this.http.post<LoginResponse>(url, body)
+    return this.http.post<LoginResponse>(url, body)
       .pipe(
         map( ({ user, token }) => this.setAuthentication(user, token),
           // Todo: errores
           catchError( error => throwError( () => error.message))
         )
       );
-      console.log({ data });
-
-      return data;
   };
 
-  register(): Observable<boolean>  {
-    return of(true)
+  register( name: string, email: string, password: string ): Observable<boolean>  {
+
+    const url = `${this.baseUrl}/auth/register`;
+    const body = { name, email, password };
+    const data = this.http.post<UserRegister>(url, body)
+      .pipe(
+        map( ({user, token}) => this.setAuthentication( user, token )),
+        //en caso de error.
+        catchError( error => throwError( () => error ) )
+      )
+    return data;
   };
 
   checkAuthStatus(): Observable<boolean> {
     const url = `${this.baseUrl}/auth/check-token`;
     const token =  localStorage.getItem('token');
-    
+
     if( !token ) {
       this.logout()
       return of(false);

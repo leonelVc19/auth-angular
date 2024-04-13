@@ -18,14 +18,13 @@ export class LoginPageComponent {
     email:['jaun@gmail.com', [ Validators.required, Validators.email ]],
     password:['1234567', [ Validators.required, Validators.minLength(6) ]],
   });
+
   public login() {
     const { email, password } = this.myForm.value;
     this.authService.login(email, password)
       .subscribe({
         next: () => this.router.navigateByUrl('/dashboard'),
         error: ( message ) => {
-          console.log(message.error.message);
-
           Swal.fire({
             title: "Error !",
             text: `${message.error.message}`,
