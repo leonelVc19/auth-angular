@@ -24,9 +24,11 @@ export class LoginPageComponent {
       .subscribe({
         next: () => this.router.navigateByUrl('/dashboard'),
         error: ( message ) => {
+          console.log(message.error.message);
+
           Swal.fire({
             title: "Error !",
-            text: `${message}`,
+            text: `${message.error.message}`,
             icon: "error",
             timer: 1500
           });
